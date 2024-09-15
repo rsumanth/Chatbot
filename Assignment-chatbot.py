@@ -8,11 +8,11 @@ from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
 import spacy
 
-# Load environment variables from .env file
+# environment variables from .env file
 load_dotenv()
 openai_api_key = os.getenv('OPENAI_API_KEY')
 
-# Load spaCy model for NLP
+# spaCy model for NLP
 nlp = spacy.load('en_core_web_sm')
 
 # FastAPI app initialization
@@ -21,12 +21,12 @@ app = FastAPI()
 # Predefined price range for negotiation
 MIN_PRICE = 80  # Minimum acceptable price
 START_PRICE = 120  # Starting price
-counter_offer_price = START_PRICE  # Initialize counter offer price
+counter_offer_price = START_PRICE  e
 
 # Initialize memory for conversation history
 memory = ConversationBufferMemory(return_messages=True, input_key="user_message")
 
-# Define the prompt template to handle negotiation logic dynamically
+# the prompt template to handle negotiation logic dynamically
 prompt_template = PromptTemplate(
     input_variables=["history", "user_message", "logic_response"],  # Handle user_message and logic_response
     template="""
@@ -57,7 +57,7 @@ conversation_chain = LLMChain(
 class NegotiationRequest(BaseModel):
     message: str
 
-# Enhanced intent recognition from original code
+
 def extract_intent(user_message):
     doc = nlp(user_message.lower())
     offer, quantity = None, 1
@@ -90,7 +90,7 @@ def generate_counter_offer(current_offer):
 def apply_negotiation_logic(user_message):
     global counter_offer_price
 
-    # Extract intent from the message
+    
     intent = extract_intent(user_message)
 
     # Handle the negotiation logic based on the intent
@@ -105,7 +105,7 @@ def apply_negotiation_logic(user_message):
             return f"Your offer of ${user_offer} is too low. The minimum price I can accept is ${MIN_PRICE}."
 
     elif intent[0] == "request_discount":
-        # Handle discount request
+        
         quantity = intent[1]
 
         if counter_offer_price > MIN_PRICE:
@@ -134,18 +134,18 @@ async def negotiate(req: NegotiationRequest):
     global counter_offer_price
     user_message = req.message
 
-    # Apply the manual negotiation logic to determine the correct response content
+   
     logic_response = apply_negotiation_logic(user_message)
 
-    # Use LangChain to process the conversation, applying negotiation logic and history
+
     response_with_history = conversation_chain.predict(
         user_message=user_message, logic_response=logic_response
     )
 
-    # Return the final response to the user
+
     return {"response": response_with_history}
 
-# Run the API with Uvicorn (optional if running via CLI)
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8000)
